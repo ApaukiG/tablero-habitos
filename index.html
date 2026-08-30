@@ -29,29 +29,8 @@
       <button type="submit" class="btn btn-primary">Agregar</button>
     </form>
 
-    <!-- Aquí se van a renderizar los hábitos dinámicamente con JS -->
+    <!-- Los <li> se generan 100% desde JavaScript con renderizarHabitos() -->
     <ul id="lista-habitos" class="list-group">
-
-      <!-- Ejemplo temporal (Sesión 2): hábito PENDIENTE -->
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        Tomar 2L de agua
-        <div>
-          <button class="btn btn-sm btn-outline-success">✓</button>
-          <button class="btn btn-sm btn-outline-danger">✕</button>
-        </div>
-      </li>
-
-      <!-- Ejemplo temporal (Sesión 2): hábito COMPLETADO -->
-      <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-success">
-        <span class="text-decoration-line-through text-muted">Leer 20 minutos</span>
-        <div>
-          <button class="btn btn-sm btn-outline-success">✓</button>
-          <button class="btn btn-sm btn-outline-danger">✕</button>
-        </div>
-      </li>
-
-      <!-- Nota: estos <li> de ejemplo se van a reemplazar por los generados
-           dinámicamente con JS en la Sesión 4 (renderizarHabitos()) -->
     </ul>
 
   </div>
@@ -62,7 +41,7 @@
   ></script>
 
   <!-- ============================================= -->
-  <!-- Sesión 3: Modelo de datos en JS (dentro del mismo HTML) -->
+  <!-- Sesiones 3 y 4: Modelo de datos + Renderizado + Eventos -->
   <!-- ============================================= -->
   <script>
     // ---------------------------------------------
@@ -73,6 +52,11 @@
 
     // Contador simple para generar ids únicos
     let contadorId = 1;
+
+    // Referencias a elementos del DOM que usaremos varias veces
+    const listaHabitos = document.getElementById("lista-habitos");
+    const formHabito = document.getElementById("form-habito");
+    const inputHabito = document.getElementById("input-habito");
 
     // ---------------------------------------------
     // Funciones auxiliares (arrow functions)
@@ -106,22 +90,94 @@
       });
     };
 
-    // Ejemplo de destructuring al recorrer el arreglo (lo usaremos
-    // en la Sesión 4 dentro de renderizarHabitos())
-    const mostrarResumenEnConsola = () => {
-      habitos.forEach(({ nombre, completado }) => {
-        console.log(`${nombre}: ${completado ? "Completado" : "Pendiente"}`);
+    // ---------------------------------------------
+    // Sesión 4, parte 1: Renderizado dinámico
+    // ---------------------------------------------
+    const renderizarHabitos = () => {
+      // Limpiamos la lista antes de volver a dibujarla
+      listaHabitos.innerHTML = "";
+
+      habitos.forEach(({ id, nombre, completado }) => {
+        // Creamos el <li> desde JS, nada de HTML hardcodeado
+        const li = document.createElement("li");
+        li.className =
+          "list-group-item d-flex justify-content-between align-items-center" +
+          (completado ? " list-group-item-success" : "");
+        li.dataset.id = id; // guardamos el id en el elemento, clave para la delegación de eventos
+
+        // Texto del hábito (tachado si está completado)
+        const span = document.createElement("span");
+        span.textContent = nombre;
+        if (completado) {
+          span.className = "text-decoration-line-through text-muted";
+        }
+
+        // Contenedor de botones
+        const divBotones = document.createElement("div");
+
+        const btnCompletar = document.createElement("button");
+        btnCompletar.className = "btn btn-sm btn-outline-success btn-completar";
+        btnCompletar.textContent = "✓";
+
+        const btnEliminar = document.createElement("button");
+        btnEliminar.className = "btn btn-sm btn-outline-danger btn-eliminar";
+        btnEliminar.textContent = "✕";
+
+        divBotones.appendChild(btnCompletar);
+        divBotones.appendChild(btnEliminar);
+
+        li.appendChild(span);
+        li.appendChild(divBotones);
+
+        listaHabitos.appendChild(li);
       });
     };
 
     // ---------------------------------------------
-    // Pruebas temporales (Sesión 3) — se pueden borrar
-    // una vez que renderizarHabitos() esté lista
+    // Sesión 4, parte 2: Delegación de eventos
+    // ---------------------------------------------
+
+    // Un único listener en el <ul> padre para el formulario de agregar
+    formHabito.addEventListener("submit", (event) => {
+      event.preventDefault(); // evita que la página se recargue
+
+      const nombreHabito = inputHabito.value.trim();
+      if (nombreHabito === "") return;
+
+      agregarHabito(nombreHabito);
+      renderizarHabitos();
+
+      inputHabito.value = "";
+      inputHabito.focus();
+    });
+
+    // Un único listener en el <ul> padre que maneja completar Y eliminar
+    listaHabitos.addEventListener("click", (event) => {
+      const li = event.target.closest("li");
+      if (!li) return; // el clic no fue dentro de un <li>
+
+      // Destructuring para leer el id guardado en el dataset (siempre es string, lo convertimos)
+      const { id } = li.dataset;
+      const idHabito = Number(id);
+
+      if (event.target.classList.contains("btn-completar")) {
+        alternarCompletado(idHabito);
+        renderizarHabitos();
+      }
+
+      if (event.target.classList.contains("btn-eliminar")) {
+        eliminarHabito(idHabito);
+        renderizarHabitos();
+      }
+    });
+
+    // ---------------------------------------------
+    // Datos iniciales de ejemplo + primer render
     // ---------------------------------------------
     agregarHabito("Tomar 2L de agua");
     agregarHabito("Leer 20 minutos");
     alternarCompletado(2);
-    mostrarResumenEnConsola();
+    renderizarHabitos();
   </script>
 
 </body>
