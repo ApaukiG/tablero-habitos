@@ -61,7 +61,68 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
   ></script>
 
-  <!-- Tu JS -->
-  <script src="app.js"></script>
+  <!-- ============================================= -->
+  <!-- Sesión 3: Modelo de datos en JS (dentro del mismo HTML) -->
+  <!-- ============================================= -->
+  <script>
+    // ---------------------------------------------
+    // Arreglo principal: cada hábito es un objeto
+    // con id, nombre y estado (completado o no)
+    // ---------------------------------------------
+    let habitos = [];
+
+    // Contador simple para generar ids únicos
+    let contadorId = 1;
+
+    // ---------------------------------------------
+    // Funciones auxiliares (arrow functions)
+    // ---------------------------------------------
+
+    // Agrega un nuevo hábito al arreglo
+    const agregarHabito = (nombre) => {
+      const nuevoHabito = {
+        id: contadorId++,
+        nombre,
+        completado: false,
+      };
+      habitos.push(nuevoHabito);
+    };
+
+    // Elimina un hábito según su id
+    const eliminarHabito = (id) => {
+      habitos = habitos.filter((habito) => habito.id !== id);
+    };
+
+    // Alterna el estado completado/pendiente de un hábito
+    const alternarCompletado = (id) => {
+      habitos = habitos.map((habito) => {
+        // Destructuring para extraer las propiedades del hábito
+        const { id: idHabito, completado } = habito;
+
+        if (idHabito === id) {
+          return { ...habito, completado: !completado };
+        }
+        return habito;
+      });
+    };
+
+    // Ejemplo de destructuring al recorrer el arreglo (lo usaremos
+    // en la Sesión 4 dentro de renderizarHabitos())
+    const mostrarResumenEnConsola = () => {
+      habitos.forEach(({ nombre, completado }) => {
+        console.log(`${nombre}: ${completado ? "Completado" : "Pendiente"}`);
+      });
+    };
+
+    // ---------------------------------------------
+    // Pruebas temporales (Sesión 3) — se pueden borrar
+    // una vez que renderizarHabitos() esté lista
+    // ---------------------------------------------
+    agregarHabito("Tomar 2L de agua");
+    agregarHabito("Leer 20 minutos");
+    alternarCompletado(2);
+    mostrarResumenEnConsola();
+  </script>
+
 </body>
 </html>
