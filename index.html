@@ -91,6 +91,29 @@
     };
 
     // ---------------------------------------------
+    // Extra: Persistencia con localStorage
+    // ---------------------------------------------
+
+    // Guarda el arreglo actual de hábitos y el contador de ids
+    const guardarEnLocalStorage = () => {
+      localStorage.setItem("habitos", JSON.stringify(habitos));
+      localStorage.setItem("contadorId", contadorId);
+    };
+
+    // Carga los hábitos guardados (si existen) al iniciar la app
+    const cargarDesdeLocalStorage = () => {
+      const habitosGuardados = localStorage.getItem("habitos");
+      const contadorGuardado = localStorage.getItem("contadorId");
+
+      if (habitosGuardados) {
+        habitos = JSON.parse(habitosGuardados);
+      }
+      if (contadorGuardado) {
+        contadorId = Number(contadorGuardado);
+      }
+    };
+
+    // ---------------------------------------------
     // Sesión 4, parte 1: Renderizado dinámico
     // ---------------------------------------------
     const renderizarHabitos = () => {
@@ -145,6 +168,7 @@
       if (nombreHabito === "") return;
 
       agregarHabito(nombreHabito);
+      guardarEnLocalStorage();
       renderizarHabitos();
 
       inputHabito.value = "";
@@ -162,21 +186,31 @@
 
       if (event.target.classList.contains("btn-completar")) {
         alternarCompletado(idHabito);
+        guardarEnLocalStorage();
         renderizarHabitos();
       }
 
       if (event.target.classList.contains("btn-eliminar")) {
         eliminarHabito(idHabito);
+        guardarEnLocalStorage();
         renderizarHabitos();
       }
     });
 
     // ---------------------------------------------
-    // Datos iniciales de ejemplo + primer render
+    // Inicio de la app: cargar de localStorage o usar ejemplos
     // ---------------------------------------------
-    agregarHabito("Tomar 2L de agua");
-    agregarHabito("Leer 20 minutos");
-    alternarCompletado(2);
+    cargarDesdeLocalStorage();
+
+    // Si no había nada guardado (primera vez que se abre), cargamos
+    // un par de hábitos de ejemplo para no arrancar con la lista vacía
+    if (habitos.length === 0) {
+      agregarHabito("Tomar 2L de agua");
+      agregarHabito("Leer 20 minutos");
+      alternarCompletado(2);
+      guardarEnLocalStorage();
+    }
+
     renderizarHabitos();
   </script>
 
