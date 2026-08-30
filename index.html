@@ -31,7 +31,27 @@
 
     <!-- Aquí se van a renderizar los hábitos dinámicamente con JS -->
     <ul id="lista-habitos" class="list-group">
-      <!-- Los <li> se generan desde JavaScript, no van hardcodeados aquí -->
+
+      <!-- Ejemplo temporal (Sesión 2): hábito PENDIENTE -->
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Tomar 2L de agua
+        <div>
+          <button class="btn btn-sm btn-outline-success">✓</button>
+          <button class="btn btn-sm btn-outline-danger">✕</button>
+        </div>
+      </li>
+
+      <!-- Ejemplo temporal (Sesión 2): hábito COMPLETADO -->
+      <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-success">
+        <span class="text-decoration-line-through text-muted">Leer 20 minutos</span>
+        <div>
+          <button class="btn btn-sm btn-outline-success">✓</button>
+          <button class="btn btn-sm btn-outline-danger">✕</button>
+        </div>
+      </li>
+
+      <!-- Nota: estos <li> de ejemplo se van a reemplazar por los generados
+           dinámicamente con JS en la Sesión 4 (renderizarHabitos()) -->
     </ul>
 
   </div>
